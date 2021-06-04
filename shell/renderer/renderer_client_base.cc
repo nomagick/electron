@@ -22,6 +22,7 @@
 #include "electron/buildflags/buildflags.h"
 #include "media/blink/multibuffer_data_source.h"
 #include "printing/buildflags/buildflags.h"
+#include "shell/browser/api/electron_api_protocol.h"
 #include "shell/common/api/electron_api_native_image.h"
 #include "shell/common/color_util.h"
 #include "shell/common/gin_helper/dictionary.h"
@@ -111,6 +112,11 @@ RendererClientBase* g_renderer_client_base = nullptr;
 
 RendererClientBase::RendererClientBase() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
+  // Parse --service-worker-schemes=scheme1,scheme2
+  std::vector<std::string> service_worker_schemes_list =
+      ParseSchemesCLISwitch(command_line, switches::kServiceWorkerSchemes);
+  for (const std::string& scheme : service_worker_schemes_list)
+    electron::api::AddServiceWorkerScheme(scheme);
   // Parse --standard-schemes=scheme1,scheme2
   std::vector<std::string> standard_schemes_list =
       ParseSchemesCLISwitch(command_line, switches::kStandardSchemes);
@@ -465,7 +471,8 @@ v8::Local<v8::Context> RendererClientBase::GetContext(
   auto* render_frame = content::RenderFrame::FromWebFrame(frame);
   DCHECK(render_frame);
   if (render_frame && render_frame->GetBlinkPreferences().context_isolation)
-    return frame->WorldScriptContext(isolate, WorldIDs::ISOLATED_WORLD_ID);
+    return frame->GetScriptContextFromWorldId(isolate,
+                                              WorldIDs::ISOLATED_WORLD_ID);
   else
     return frame->MainWorldScriptContext();
 }

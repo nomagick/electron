@@ -4,7 +4,6 @@
 
 #include "shell/renderer/api/electron_api_context_bridge.h"
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -582,8 +581,8 @@ void ExposeAPIInMainWorld(v8::Isolate* isolate,
     return;
   }
 
-  v8::Local<v8::Context> isolated_context =
-      frame->WorldScriptContext(args->isolate(), WorldIDs::ISOLATED_WORLD_ID);
+  v8::Local<v8::Context> isolated_context = frame->GetScriptContextFromWorldId(
+      args->isolate(), WorldIDs::ISOLATED_WORLD_ID);
 
   {
     context_bridge::ObjectCache object_cache;

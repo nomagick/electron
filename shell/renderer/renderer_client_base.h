@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "content/public/renderer/content_renderer_client.h"
@@ -65,7 +64,7 @@ class RendererClientBase : public content::ContentRendererClient
 #if BUILDFLAG(ENABLE_BUILTIN_SPELLCHECKER)
   // service_manager::LocalInterfaceProvider implementation.
   void GetInterface(const std::string& name,
-                    mojo::ScopedMessagePipeHandle request_handle) override;
+                    mojo::ScopedMessagePipeHandle interface_pipe) override;
 #endif
 
   virtual void DidCreateScriptContext(v8::Handle<v8::Context> context,
